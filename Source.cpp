@@ -291,7 +291,7 @@ void fileStream(string type) { //Функция необходимая для ввода желаемого названи
         else { record(fileOutAdd(location.c_str()), location.c_str()); }
     }
 }
-
+//тест тест
 ofstream fileOutReset(const char* fname) { //Удаляет все данные из файла с названием, переданным в функцию. Возвращает объект ofstream, для записи данных в указанный файл.
     ofstream del1;
     del1.open(fname, std::ofstream::trunc);

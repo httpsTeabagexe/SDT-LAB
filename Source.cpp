@@ -1,20 +1,23 @@
-#include "Header.h"
 
-//подсчет общего числа найденных рифмующихся пар в поступающем тексте, а также формирование их
-//упорядоченного списка с подсчетом числа появлений каждого из слов, найденных в роли члена пары,
-//и идентификацией предложений, в которых содержатся найденные слова.
+#include "Header.h" 
+
+#include <filesystem>
+
+//подсчет общего числа найденных рифмующихся пар в поступающем тексте, а также формирование их 
+//упорядоченного списка с подсчетом числа появлений каждого из слов, найденных в роли члена пары, 
+//и идентификацией предложений, в которых содержатся найденные слова. 
 vector<string> exceptions = {
     "долой", "домой" , "наперебой" ,"порой", "украдкой" ,"вдвое", "втрое", "надвое", "более",
     "далее", "заранее","менее", "наиболее", "наименее",
     "позднее", "ранее", "скорее" ,"невзирая", "впервые", "дорого", "итого",
     "намного", "недорого", "некого", "немного", "строго",
     "нечего", "вплотную", "вслепую", "впустую", "вручную", "зачастую", "напрямую", "более",
-    //слова с окончанием "ому"/"ему" не записаны, т.к. все начинаются с "по-", что является признаком наречия.
-    //слова с окончанием "ом", "ем", не внесены в исключения, из-за их большого количества.
-    //свеху представлены исключения, для окончаний схожих с окончаниями прилагательных
+    //слова с окончанием "ому"/"ему" не записаны, т.к. все начинаются с "по-", что является признаком наречия. 
+    //слова с окончанием "ом", "ем", не внесены в исключения, из-за их большого количества. 
+    //свеху представлены исключения, для окончаний схожих с окончаниями прилагательных 
     "напролет", "незачем", "затем", "замужем", "живьем", "днем", "втроем", "вдвоем", "вчетвером",
     "видать", "вплоть", "вспять", "насмерть", "наизусть", "опять", "чуть",
-    //свеху представлены исключения, для окончаний схожих с окончаниями глаголов
+    //свеху представлены исключения, для окончаний схожих с окончаниями глаголов 
     "бегом", "битком" , "босиком" ,"вверх", "вбок" , "вниз", "вглубь", "вдаль" ,"вдобавок",
     "вдоволь", "вдоль" ,"вдруг", "взад", "вконец", "вмиг", "вновь", "внутрь", "вокруг",
     "вперед" , "вплоть", "впредь", "впрок", "впрямь" , "враз" ,"врасплох", "всерьез",
@@ -22,7 +25,7 @@ vector<string> exceptions = {
     "назад", "наотрез", "наперед", "напоказ" , "наотрез", "наперед", "напоследок", "напролет",
     "напрочь", "насквозь", "наспех", "настежь" , "наугад", "невпопад", "пешком", "поверх",
     "подряд", "пополам", "прямиком", "чересчур",
-    //свеху представлены исключения, для окончаний с согласными буквами
+    //свеху представлены исключения, для окончаний с согласными буквами 
     "ещё", "уже", "зря", "еле", "наперебой", "невзначай", "порой", "украдкой"
 };
 vector<string> adjectivEendings = {
@@ -38,6 +41,7 @@ vector<string> vowels = {
 };
 
 vector<string> adverb = {};
+int pairsCount = 0;
 
 void all() {
     cout << "Добро пожаловать в программу, которая ищет пары рифмующихся наречий." << endl;
@@ -48,7 +52,7 @@ void all() {
     doubleRhyme(adverb);
 }
 
-void doubleRhyme(vector<string>& adverb) {
+string** doubleRhyme(vector<string>& adverb) {
     int rhymeCount = 0, wordCount = 1, size = adverb.size();
     bool check = false;
     string** dynamicArrays = new string * [size];
@@ -60,41 +64,58 @@ void doubleRhyme(vector<string>& adverb) {
                 check = true;
                 dynamicArrays[rhymeCount][0] = adverb[i];
                 dynamicArrays[rhymeCount][wordCount] = adverb[j];
-                cout << adverb[i] << " " << rhymeCount << " " << adverb[j] << " " << wordCount << "         =====   РИФМА" << endl;
+                //cout << adverb[i] << " " << rhymeCount << " " << adverb[j] << " " << wordCount << "         =====   РИФМА" << endl;
                 adverb.erase(adverb.begin() + j);
                 j--;
                 wordCount++;
             }
         }
-        if (check) {
-            cout << "Massiv: ";
-            for (int j = 0; j < wordCount; j++) {
-                cout << dynamicArrays[rhymeCount][j] << " ";
-            }
-            cout << endl;
-        }
+        /* if (check) {
+             cout << "Massiv: ";
+             for (int j = 0; j < wordCount; j++) {
+                 cout << dynamicArrays[rhymeCount][j] << " ";
+             }
+             cout << endl;
+         }*/
         wordCount = 1;
         if (check) rhymeCount++;
         check = false;
     }
     doubleRhymeOutput(dynamicArrays, rhymeCount);
+    return dynamicArrays;
 }
 
 void doubleRhymeOutput(string** mass, int massCount) {
     for (size_t i = 0; i < massCount; ++i) {
+        string str;
         cout << "Array contents: ";
         int j = 0;
-        while (!mass[i][j].empty()) { cout << mass[i][j] << " "; j++; }
+        while (!mass[i][j].empty()) {
+            cout << mass[i][j] << " ";
+            str += mass[i][j] + " ";
+            j++;
+        }
         cout << endl;
+        pairsCount += countWordPairs(str);
     }
+    cout << "Количество пар рифм: " << pairsCount << endl;
 
-    //// Освобождение памяти
-    //for (size_t i = 0; i < massCount; ++i) {
-    //    delete[] mass[i];
-    //}
-    //delete[] mass;
+    // Освобождение памяти
+    for (size_t i = 0; i < massCount; ++i) {
+        delete[] mass[i];
+    }
+    delete[] mass;
 }
-bool determinePartOfSpeech(string word) { // Функция для определения части речи
+
+int countWordPairs(string str) {
+    istringstream stream(str);
+    string word;
+    int wordCount = 0;
+    while (stream >> word) { wordCount++; }
+    return wordCount * (wordCount - 1) / 2;
+}
+
+bool determinePartOfSpeech(string word) { // Функция для определения части речи 
     bool adverb = false;
     if (word.size() <= 3) { return false; }
     for (string str : exceptions) { if (word == str) { return true; } }
@@ -107,11 +128,37 @@ bool determinePartOfSpeech(string word) { // Функция для определения части речи
     return adverb;
 }
 
+bool isRhyme(string word1, string word2) {
+    bool rhyme = false;
+    //cout << endl << word1.substr(word1.size() - 3) << endl << word2.substr(word2.size() - 3) << endl; 
+    if (word1.substr(word1.size() - 3) == word2.substr(word2.size() - 3)) { rhyme = true; }
+    if (removeConsonants(word1.substr(word1.size() - 4)) == removeConsonants(word2.substr(word2.size() - 4))) { rhyme = true; }
+    //if (removeConsonants(word1.substr(word1.size() - 6)) == removeConsonants(word2.substr(word2.size() - 6))) { rhyme = true; } 
+    if (removeConsonants(word1) == removeConsonants(word2)) { rhyme = true; }
+    return rhyme;
+}
+
+string removeConsonants(string input) { // Функция для удаления согласных букв из строки 
+    const string vowels = "аеёиоуыэюя"; // Гласные буквы русского языка 
+    string result;
+    for (char ch : input) {
+        if (vowels.find(ch) != string::npos) { result += ch; }
+    }
+    if (result.length() > 1) { return result; }
+    else return input;
+}
+
 string checkSymbol(string pas) { // Вспомогательная функция для проверки передаваемой строки на специальные символы и её дальнейшего форматирования.
     string result;
-    for (char c : pas) { if ((c >= 'а' and c <= 'я') or (c >= 'А' and c <= 'Я')) { result += c; } }
-    if (result.empty()) { cout << "Слово " << pas << " полностью состояло из непредвиденных символов и было удалено. " << endl; }
-    if (result.length() < pas.length() and (!result.empty())) { cout << "Cимволы были удалены. Результат: "; cout << result << endl; }
+    result.reserve(pas.size()); // Reserve memory to avoid multiple allocations
+    for (char c : pas) {
+        if ((c >= 'а' && c <= 'я') || (c >= 'А' && c <= 'Я')) {
+            result += c;
+        }
+    }
+    if (result.empty()) {
+        cout << "Слово " << pas << " полностью состояло из непредвиденных символов и было удалено. " << endl;
+    }
     return result;
 }
 
@@ -138,7 +185,7 @@ void inputFromFile(const char* fname, vector<string>& adverb) {  // Функция для 
                 delta = lastPos - firstPos;
                 word = str.substr(firstPos, delta); // Формируем слово: оно начинается с первого символа, который не равен пробелу, до следующего ближайшего пробела.
                 word = checkSymbol(word); word = unification(word);
-                cout << word << " - " << determinePartOfSpeech(word) << endl;
+                //cout << word << " - " << determinePartOfSpeech(word) << endl;
                 if (!word.empty()) {
                     if ((adverb.empty() or find(adverb.begin(), adverb.end(), word) == adverb.end()) and (determinePartOfSpeech(word))) { adverb.push_back(word); }
                 }
@@ -173,28 +220,38 @@ string isFileExists(string directory) { //Функция для получения директории входн
         else { cout << "Файл отсутствует в папке, попробуйте ещё раз." << endl; }
     }
 }
+
 string dir(bool mode) { //Функция отвечает за работу с папкой "Информация"(создает/уведомляет о существовании).
     string desktopDir = getDesktopDirectory();
-    if (desktopDir.empty()) { cout << "Не удалось получить рабочий стол пользователя." << endl; }
+    if (desktopDir.empty()) {
+        cerr << "Не удалось получить рабочий стол пользователя." << endl;
+        return "";
+    }
     string infoDirectory = desktopDir + "Информация";
     if (mode) {
-        if (filesystem::exists(infoDirectory)) { cout << "Папка 'Информация' уже существует на рабочем столе. В ней будет храниться Ваш файл." << endl; }
-        else {
-            if (filesystem::create_directory(infoDirectory)) { cout << "Папка 'Информация' успешно создана на рабочем столе. В ней будет храниться Ваш файл." << endl; }
-            else { cout << "Не удалось создать папку 'Информация' на рабочем столе." << endl; }
+        if (filesystem::exists(infoDirectory)) {
+            cout << "Папка 'Информация' уже существует на рабочем столе. В ней будет храниться Ваш файл." << endl;
+        } else {
+            if (filesystem::create_directory(infoDirectory)) {
+                cout << "Папка 'Информация' успешно создана на рабочем столе. В ней будет храниться Ваш файл." << endl;
+            } else {
+                cerr << "Не удалось создать папку 'Информация' на рабочем столе." << endl;
+                return "";
+            }
         }
-    }
-    if (!mode) {
+    } else {
         if (!filesystem::exists(infoDirectory)) {
-            cout << "Папки 'Информация' нет на рабочем столе!" << endl << "Для загрузки информации из файлов создайте папку 'Информация' и добавьте в неё файлы сформированной информации." << endl;
-            cout << "Нажмите цифру 1 для завершения программы.";
+            cerr << "Папки 'Информация' нет на рабочем столе!" << endl
+                 << "Для загрузки информации из файлов создайте папку 'Информация' и добавьте в неё файлы сформированной информации." << endl;
+            cerr << "Нажмите цифру 1 для завершения программы.";
             int anw = _getch();
             while (anw != '1') { anw = _getch(); }
-            if (anw == 49) { exit(0); }
+            if (anw == '1') { exit(0); }
         }
     }
     return infoDirectory;
 }
+
 string getDesktopDirectory() { //Функция принимает домашнюю директорию пользователя, используя функцию getHomeDirectory(). Затем возвращает строку, представляющую путь к рабочему столу.
     const char* homeDir = nullptr;
     if ((homeDir = getenv("HOME")) == nullptr) { homeDir = getenv("USERPROFILE"); }
@@ -234,23 +291,6 @@ void fileStream(string type) { //Функция необходимая для ввода желаемого названи
         else { record(fileOutAdd(location.c_str()), location.c_str()); }
     }
 }
-
-bool isRhyme(std::string word1, std::string word2) {
-    // Convert to lowercase for case-insensitive comparison
-    std::transform(word1.begin(), word1.end(), word1.begin(), ::tolower);
-    std::transform(word2.begin(), word2.end(), word2.begin(), ::tolower);
-
-    // Basic rhyme check (last two letters):
-    int len1 = word1.length();
-    int len2 = word2.length();
-    if (len1 < 2 || len2 < 2) {
-        return false;
-    }
-    return word1.substr(len1 - 2) == word2.substr(len2 - 2);
-
-    //  Add more sophisticated rhyme detection logic here as needed
-}
-
 
 ofstream fileOutReset(const char* fname) { //Удаляет все данные из файла с названием, переданным в функцию. Возвращает объект ofstream, для записи данных в указанный файл.
     ofstream del1;

@@ -15,7 +15,7 @@
 #include <iomanip>
 #include <iosfwd>
 #include <iostream>
-#include <ostream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <windows.h> 
@@ -27,8 +27,9 @@ bool isRhyme(string word1, string word2);
 void inputFromFile(const char* fname, vector<string>& adverb);
 void all();
 
-void doubleRhyme(vector<string>& adverb);
+string** doubleRhyme(vector<string>& adverb);
 void doubleRhymeOutput(string** mass, int massCount);
+int countWordPairs(string str);
 
 
 string dir(bool mode);	/// Функция отвечает за работу с папкой "Информация"(создает/уведомляет о существовании).
@@ -47,4 +48,3 @@ ofstream fileOutReset(const char* fname); /// Удаляет все данные из файла с назв
 string removeConsonants(string input);
 string checkSymbol(string pas);
 string unification(string str);
-

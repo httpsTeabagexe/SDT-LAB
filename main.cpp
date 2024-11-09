@@ -7,7 +7,4 @@ int main() {
 	setlocale(LC_CTYPE, ".1251");
 	setlocale(LC_ALL, "Rus");
 	all();
-	/*string word = "спокойный", str = "ый";
-	cout << word.substr(word.size() - str.size())<<endl;
-	cout << str;*/
 }
